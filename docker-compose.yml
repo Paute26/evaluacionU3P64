@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: universidad
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - 5432:5432
+    networks:
+      - datalogger_net
+
+  backend:
+    image: epaute/eva64:latest
+    container_name: backend
+    hostname: backend
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=universidad
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - JAEGER_SAMPLER_TYPE=const
+      - JAEGER_SAMPLER_PARAM=1
+    ports:
+      - 8080:8080
+      - 9990:9990
+    depends_on:
+      - postgres
+    networks:
+      - datalogger_net
+networks:
+  datalogger_net:
